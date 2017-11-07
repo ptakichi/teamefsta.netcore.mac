@@ -8,6 +8,12 @@ namespace testgitlab.Business
 {
     public class ShelterInfoBusiness
     {
+
+        private static String searchSql = "select Top 20 placename,address,latitude,longitude,"
+            + "abs(latitude-@ido) as A ,abs(longitude-@keido) as B ,"
+            + " abs(latitude-@ido) + abs(longitude-@keido) as C from ShelterInfo"
+            + " order by C asc";
+        
         public ShelterInfoBusiness()
         {
             
@@ -29,11 +35,16 @@ namespace testgitlab.Business
                 {
                     Console.WriteLine("\nQuery data example:");
                     Console.WriteLine("=========================================\n");
+                    Console.WriteLine("Ido:"+ ido.ToString());
+                    Console.WriteLine("Keido:" + keido.ToString());
 
                     connection.Open();
                     StringBuilder sb = new StringBuilder();
-                    sb.Append("SELECT TOP 20 placename,address,latitude,longitude ");
-                    sb.Append("FROM ShelterInfo");
+
+                    sb.Append(searchSql);
+                    sb.Replace("@ido",ido.ToString());
+                    sb.Replace("@keido", keido.ToString());
+
                     String sql = sb.ToString();
 
                     using (SqlCommand command = new SqlCommand(sql, connection))
