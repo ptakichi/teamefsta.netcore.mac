@@ -12,10 +12,11 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       //"launchUrl": "api/values",
-      "launchUrl": "api/shelterInfo/500/500",
+      "launchUrl": "api/CalendarInfo/20171111",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+      "applicationUrl": "http://localhost:5000/"
     },
     "testgitlab": {
       "commandName": "Project",
