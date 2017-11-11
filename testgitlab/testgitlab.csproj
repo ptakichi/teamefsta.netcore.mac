@@ -22,4 +22,7 @@
   <ItemGroup>
       <PackageReference Include="System.Data.SqlClient" Version="4.4.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Business\GomiInfoValue.cs" />
+  </ItemGroup>
 </Project>
