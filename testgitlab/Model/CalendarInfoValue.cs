@@ -6,14 +6,14 @@ namespace testgitlab.Model
         public CalendarInfoValue()
         {
         }
-        //日付
+        //開始日時〜終了日時
         public String date { get; set; }
-        //曜日
-        public String youbi { get; set; }
-        //ゴミ出し内容
+        //スケジュール内容
         public String naiyou { get; set; }
-        //コード
-        public String code { get; set; }
+        //場所
+        public String place { get; set; }
+        //詳細
+        public String syousai { get; set; }
 
     }
 }

@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Globalization;
 
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Calendar.v3;
@@ -22,96 +23,116 @@ namespace testgitlab.Business
     public class CalendarInfoBusiness
     {
 
-        //private static String searchSql = "select * from GomiInfo where gomidate = '@today';";
-
-        //private static String ClientID = "210631258848-abp3kgu2q2sg60vnkm59ll2vrd0lkc8f.apps.googleusercontent.com";
-        //private static String  ClientSecret = "7vYG53BNsEH2SpLoHaQAGqEs";
-        //private static String  calendarID = "rgddvaud5givpebco9g1vgb7ng@group.calendar.google.com";
-
-        //{ "web":{ "client_id":"210631258848-abp3kgu2q2sg60vnkm59ll2vrd0lkc8f.apps.googleusercontent.com","project_id":"teamefsta-1509869802139","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://accounts.google.com/o/oauth2/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"7vYG53BNsEH2SpLoHaQAGqEs","redirect_uris":["http://teamefstanetcoremac.azurewebsites.net"]
-        //}
-        //}
+        private static string[] Scopes = { CalendarService.Scope.CalendarReadonly };
+        private static string ApplicationName = "Google Calendar API .NET Quickstart";
 
         public CalendarInfoBusiness()
         {
             
         }
 
-        private static string[] Scopes = { CalendarService.Scope.CalendarReadonly };
-        private static string ApplicationName = "Google Calendar API .NET Quickstart";
 
         public List<CalendarInfoValue> getCalendarInfo(String today){
 
-
             List<CalendarInfoValue> result = new List<CalendarInfoValue>();
 
-            // If modifying these scopes, delete your previously saved credentials
-            // at ~/.credentials/calendar-dotnet-quickstart.json
+            if(today.Length < 8 ){
+                result.Add(new CalendarInfoValue(){naiyou="日付は８文字で入力してけろ"});
+                return result;
+            }
 
-                UserCredential credential;
+            UserCredential credential;
 
-                using (var stream =
-                    new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
-                {
+            using (var stream =
+                new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
+            {
 
-                    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                        GoogleClientSecrets.Load(stream).Secrets,
-                        Scopes,
-                        "p.takichi60@gmail.com",
-                        CancellationToken.None).Result;
-                //credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    //GoogleClientSecrets.Load(stream).Secrets,
-                    //Scopes,
-                    //"p.takichi60@gmail.com",
-                    //CancellationToken.None,
-                    //new FileDataStore(credPath, true)).Result;
-                    //Console.WriteLine("Credential file saved to: " + credPath);
-                }
+                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    GoogleClientSecrets.Load(stream).Secrets,
+                    Scopes,
+                    "p.takichi60@gmail.com",
+                    CancellationToken.None).Result;
+            }
 
-                // Create Google Calendar API service.
-                var service = new CalendarService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = credential,
-                    ApplicationName = ApplicationName,
-                });
+            // Create Google Calendar API service.
+            var service = new CalendarService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = ApplicationName,
+            });
 
-                // Define parameters of request.
+            // Define parameters of request.
             //EventsResource.ListRequest request = service.Events.List("primary");
             EventsResource.ListRequest request = service.Events.List("rgddvaud5givpebco9g1vgb7ng@group.calendar.google.com");
 
-                request.TimeMin = DateTime.Now;
-                request.ShowDeleted = false;
-                request.SingleEvents = true;
-                request.MaxResults = 10;
-                request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
+            int year = Int32.Parse(today.Substring(0, 4));
+            int month = Int32.Parse(today.Substring(4, 2));
+            int day = Int32.Parse(today.Substring(6, 2));
 
-                // List events.
-                Events events = request.Execute();
-                Console.WriteLine("Upcoming events:");
-                if (events.Items != null && events.Items.Count > 0)
+            DateTime min = new DateTime(year, month, day, 0, 0, 0);
+            DateTime max = new DateTime(year, month, day, 23, 59, 59);
+
+            //当日の予定のみ
+            request.TimeMin = min;
+            request.TimeMax = max;
+
+            request.ShowDeleted = false;
+            request.SingleEvents = true;
+            request.MaxResults = 9999;
+            request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
+
+            // List events.
+            Events events = request.Execute();
+            Console.WriteLine("Upcoming events:");
+            if (events.Items != null && events.Items.Count > 0)
+            {
+                CalendarInfoValue value = null;
+
+                foreach (var eventItem in events.Items)
                 {
-                    CalendarInfoValue value = null;
 
-                    foreach (var eventItem in events.Items)
-                    {
-                        string when = eventItem.Start.DateTime.ToString();
-                        if (String.IsNullOrEmpty(when))
-                        {
-                            when = eventItem.Start.Date;
-                        }
+                    value = new CalendarInfoValue();
+                    String from = "";
+                    String to = "";
+                    String when = "";
 
-                        value = new CalendarInfoValue();
-                        value.date = when + ":" + eventItem.Summary;
-                        Console.WriteLine("{0} ({1})", eventItem.Summary, when);
-                        result.Add(value);
+                    Thread.CurrentThread.CurrentCulture = new CultureInfo("ja-JP");
+
+                    if(!String.IsNullOrEmpty(eventItem.Start.DateTime.ToString())){
+                        
+                        from = eventItem.Start.DateTime.Value.ToString("g") ; // YYYY/MM/DD HH:MM:SS
+                        when = from; 
                     }
-                }
-                else
-                {
-                    Console.WriteLine("No upcoming events found.");
-                }
+                    if (!String.IsNullOrEmpty(eventItem.End.DateTime.ToString())){
+                        
+                        to = eventItem.End.DateTime.Value.ToString("g");
+                        when = when + " - " + to;
+                    }
+                    //From - To
+                    value.date = when;
 
+                    //スケジュール内容
+                    value.naiyou = eventItem.Summary;
 
+                    //場所
+                    if (eventItem.Location != null){
+                        value.place = eventItem.Location.ToString();
+                    }
+
+                    //詳細
+                    if (eventItem.Description != null)
+                    {
+                        value.syousai = eventItem.Description.ToString();
+                    }
+
+                    Console.WriteLine("{0} ({1})", eventItem.Summary, when);
+                    result.Add(value);
+                }
+            }
+            else
+            {
+                Console.WriteLine("No upcoming events found.");
+            }
 
             return result;
         }
