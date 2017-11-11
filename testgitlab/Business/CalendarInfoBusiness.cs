@@ -65,8 +65,15 @@ namespace testgitlab.Business
 
             credential = GoogleWebAuthorizationBroker.AuthorizeAsync(new ClientSecrets
             {
+
+                //local??
                 ClientId = "210631258848-9cvh1crkrse03r2nth7ugp1ee9o50f3u.apps.googleusercontent.com",
                 ClientSecret = "0D63DQCkUMsNM8r6TJkpeV_9"
+
+                    //Server
+                //ClientId = "210631258848-d595s7aek3n6h3g26l1red3pnoplmaoa.apps.googleusercontent.com",
+                //ClientSecret = "_SeRQhG7iwXSFpmC7Wpblx_L",
+
             }, Scopes
                 , "p.takichi60@gmail.com"
                 , CancellationToken.None
