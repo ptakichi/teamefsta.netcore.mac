@@ -11,7 +11,7 @@ using testgitlab.Model;
 namespace testgitlab.Controllers
 {
     [Route("api/[controller]")]
-    public class GomiShelterInfoController : Controller
+    public class ShelterInfoController : Controller
     {
         // GET api/ShelterInfo/5.0/
         [HttpGet("{ido}/{keido}")]
