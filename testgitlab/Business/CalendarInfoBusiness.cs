@@ -53,17 +53,19 @@ namespace testgitlab.Business
                 using (var stream =
                     new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
                 {
-                    string credPath = System.Environment.GetFolderPath(
-                        System.Environment.SpecialFolder.Personal);
-                    credPath = Path.Combine(credPath, ".credentials/calendar-dotnet-quickstart.json");
 
                     credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                         GoogleClientSecrets.Load(stream).Secrets,
                         Scopes,
-                        "user",
-                        CancellationToken.None,
-                        new FileDataStore(credPath, true)).Result;
-                    Console.WriteLine("Credential file saved to: " + credPath);
+                        "p.takichi60@gmail.com",
+                        CancellationToken.None).Result;
+                //credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    //GoogleClientSecrets.Load(stream).Secrets,
+                    //Scopes,
+                    //"p.takichi60@gmail.com",
+                    //CancellationToken.None,
+                    //new FileDataStore(credPath, true)).Result;
+                    //Console.WriteLine("Credential file saved to: " + credPath);
                 }
 
                 // Create Google Calendar API service.
@@ -74,7 +76,9 @@ namespace testgitlab.Business
                 });
 
                 // Define parameters of request.
-                EventsResource.ListRequest request = service.Events.List("primary");
+            //EventsResource.ListRequest request = service.Events.List("primary");
+            EventsResource.ListRequest request = service.Events.List("rgddvaud5givpebco9g1vgb7ng@group.calendar.google.com");
+
                 request.TimeMin = DateTime.Now;
                 request.ShowDeleted = false;
                 request.SingleEvents = true;
@@ -86,6 +90,8 @@ namespace testgitlab.Business
                 Console.WriteLine("Upcoming events:");
                 if (events.Items != null && events.Items.Count > 0)
                 {
+                    CalendarInfoValue value = null;
+
                     foreach (var eventItem in events.Items)
                     {
                         string when = eventItem.Start.DateTime.ToString();
@@ -93,67 +99,19 @@ namespace testgitlab.Business
                         {
                             when = eventItem.Start.Date;
                         }
+
+                        value = new CalendarInfoValue();
+                        value.date = when + ":" + eventItem.Summary;
                         Console.WriteLine("{0} ({1})", eventItem.Summary, when);
+                        result.Add(value);
                     }
                 }
                 else
                 {
                     Console.WriteLine("No upcoming events found.");
                 }
-                Console.Read();
 
 
-            //try
-            //{
-  
-
-
-            //    //TODO:共通化したい
-            //    SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-            //    builder.DataSource = "teamefstadb.database.windows.net";
-            //    builder.UserID = "teamefsta";
-            //    builder.Password = "Yuuka0707";
-            //    builder.InitialCatalog = "teamefstaDB";
-
-
-            //    using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
-            //    {
-            //        Console.WriteLine("\nQuery data example:");
-            //        Console.WriteLine("=========================================\n");
-            //        Console.WriteLine("today:"+ today);
-
-            //        connection.Open();
-            //        StringBuilder sb = new StringBuilder();
-
-            //        sb.Append(searchSql);
-            //        sb.Replace("@today",today);
-
-            //        String sql = sb.ToString();
-
-            //        using (SqlCommand command = new SqlCommand(sql, connection))
-            //        {
-
-            //            using (SqlDataReader reader = command.ExecuteReader())
-            //            {
-            //                CalendarInfoValue value = null;
-            //                while (reader.Read())
-            //                {
-            //                    value = new CalendarInfoValue();
-            //                    //result.date = reader.GetString(1); 
-            //                    //result.youbi = reader.GetString(2); 
-            //                    //result.naiyou = reader.GetString(3); 
-            //                    //result.code = reader.GetString(4); 
-            //                    result.Add(value);
-
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-            //catch (SqlException e)
-            //{   
-            //    Console.WriteLine(e.StackTrace);
-            //}
 
             return result;
         }
