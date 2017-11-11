@@ -7,22 +7,19 @@ using System.Collections.Generic;
 
 namespace testgitlab.Business
 {
-    public class ShelterInfoBusiness
+    public class GomiInfoBusiness
     {
 
-        private static String searchSql = "select Top 20 placename,address,latitude,longitude,"
-            + "abs(latitude-@ido) as A ,abs(longitude-@keido) as B ,"
-            + " abs(latitude-@ido) + abs(longitude-@keido) as C from ShelterInfo"
-            + " order by C asc";
-        
-        public ShelterInfoBusiness()
+        private static String searchSql = "select * from GomiInfo where gomidate = '@today';";
+
+        public GomiInfoBusiness()
         {
             
         }
 
-        public List<ShelterInfoValue> getShelterInfo(decimal ido,decimal keido){
+        public GomiInfoValue getGomiInfo(String today){
 
-            List<ShelterInfoValue> result = new List<ShelterInfoValue>();
+            GomiInfoValue result = null;
 
             try
             {
@@ -39,35 +36,29 @@ namespace testgitlab.Business
                 {
                     Console.WriteLine("\nQuery data example:");
                     Console.WriteLine("=========================================\n");
-                    Console.WriteLine("Ido:"+ ido.ToString());
-                    Console.WriteLine("Keido:" + keido.ToString());
+                    Console.WriteLine("today:"+ today);
 
                     connection.Open();
                     StringBuilder sb = new StringBuilder();
 
                     sb.Append(searchSql);
-                    sb.Replace("@ido",ido.ToString());
-                    sb.Replace("@keido", keido.ToString());
+                    sb.Replace("@today",today);
 
                     String sql = sb.ToString();
 
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
-                        ShelterInfoValue value = null;
 
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             
                             while (reader.Read())
                             {
-                                value = new ShelterInfoValue();
-                                value.Name = reader.GetString(0); 
-                                value.Address = reader.GetString(1); 
-                                value.Ido = reader.GetDecimal(2); 
-                                value.Keido = reader.GetDecimal(3); 
-
-                                result.Add(value);
-                                Console.WriteLine("場所：" + value.Name + " 住所："+ value.Address);
+                                result = new GomiInfoValue();
+                                result.date = reader.GetString(1); 
+                                result.youbi = reader.GetString(2); 
+                                result.naiyou = reader.GetString(3); 
+                                result.code = reader.GetString(4); 
 
                             }
                         }

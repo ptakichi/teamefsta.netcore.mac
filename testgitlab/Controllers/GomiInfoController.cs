@@ -11,18 +11,21 @@ using testgitlab.Model;
 namespace testgitlab.Controllers
 {
     [Route("api/[controller]")]
-    public class GomiShelterInfoController : Controller
+    public class GomiInfoController : Controller
     {
-        // GET api/ShelterInfo/5.0/
-        [HttpGet("{ido}/{keido}")]
-        public List<ShelterInfoValue> Get(decimal ido,decimal keido)
-        {   
+        // GET api/ShelterInfo/20171111
+        [HttpGet("{today}")]
+        public GomiInfoValue Get(String today)
+        {
+
             //別ドメインからのアクセス対応
             HttpContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 
-            ShelterInfoBusiness business = new ShelterInfoBusiness();
+            GomiInfoBusiness business = new GomiInfoBusiness();
 
-            return business.getShelterInfo(ido,keido);
+            return business.getGomiInfo(today);
+
         }
+ 
     }
 }
