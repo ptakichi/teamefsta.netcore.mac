@@ -43,23 +43,43 @@ namespace testgitlab.Business
 
             UserCredential credential;
 
-            using (var stream =
-                new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
+            //using (var stream =
+            //    new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
+            //{
+
+            //    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+            //        GoogleClientSecrets.Load(stream).Secrets,
+            //        Scopes,
+            //        "p.takichi60@gmail.com",
+            //        CancellationToken.None).Result;
+            //}
+
+            //// Create Google Calendar API service.
+            //var service = new CalendarService(new BaseClientService.Initializer()
+            //{
+            //    HttpClientInitializer = credential,
+            //    ApplicationName = ApplicationName,
+            //});
+
+
+
+            credential = GoogleWebAuthorizationBroker.AuthorizeAsync(new ClientSecrets
             {
+                ClientId = "210631258848-9cvh1crkrse03r2nth7ugp1ee9o50f3u.apps.googleusercontent.com",
+                ClientSecret = "0D63DQCkUMsNM8r6TJkpeV_9"
+            }, Scopes
+                , "p.takichi60@gmail.com"
+                , CancellationToken.None
+            ).Result;
 
-                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
-                    Scopes,
-                    "p.takichi60@gmail.com",
-                    CancellationToken.None).Result;
-            }
-
-            // Create Google Calendar API service.
-            var service = new CalendarService(new BaseClientService.Initializer()
+            var service = new CalendarService(new BaseClientService.Initializer
             {
                 HttpClientInitializer = credential,
                 ApplicationName = ApplicationName,
+                ApiKey = "AIzaSyDwmgN5ujZyHQcezrfujOBrjeic78J48NQ",
             });
+
+
 
             // Define parameters of request.
             //EventsResource.ListRequest request = service.Events.List("primary");
