@@ -62,6 +62,7 @@ namespace testgitlab.Business
             //});
 
 
+            //TODO:http://kokonotsu.net/log/google-calendar-api-v3-%E3%81%9D%E3%81%AE%EF%BC%92-%E8%AA%8D%E8%A8%BC%E7%B7%A8/
 
             credential = GoogleWebAuthorizationBroker.AuthorizeAsync(new ClientSecrets
             {
