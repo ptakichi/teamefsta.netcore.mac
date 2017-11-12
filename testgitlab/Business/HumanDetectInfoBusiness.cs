@@ -10,16 +10,17 @@ namespace testgitlab.Business
     public class HumanDetectInfoBusiness
     {
 
-        private static String searchSql = "select Top 20 s.detect,CONVERT(NVARCHAR, s.detecttime, 20),s.datatype"
+        private static String searchSql = "select Top 20 s.detect,s.detecttime,s.datatype"
             + " from SensorData as s"
             + " where CONVERT(VARCHAR, s.detecttime, 112) = @today"
             + " order by s.detecttime asc";
-        
+
         public HumanDetectInfoBusiness()
         {
         }
 
-        public List<HumanDetectInfoValue> getHumanDetectInfo(String today){
+        public List<HumanDetectInfoValue> getHumanDetectInfo(String today)
+        {
 
             List<HumanDetectInfoValue> result = new List<HumanDetectInfoValue>();
 
@@ -38,13 +39,13 @@ namespace testgitlab.Business
                 {
                     Console.WriteLine("\nQuery data example:");
                     Console.WriteLine("=========================================\n");
-                    Console.WriteLine("Today:"+ today);
+                    Console.WriteLine("Today:" + today);
 
                     connection.Open();
                     StringBuilder sb = new StringBuilder();
 
                     sb.Append(searchSql);
-                    sb.Replace("@today",today);
+                    sb.Replace("@today", today);
 
                     String sql = sb.ToString();
 
@@ -54,12 +55,12 @@ namespace testgitlab.Business
 
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
-                            
+
                             while (reader.Read())
                             {
                                 value = new HumanDetectInfoValue();
-                                value.Detect = reader.GetString(0); 
-                                value.Detecttime = reader.GetString(1);
+                                value.Detect = reader.GetString(0);
+                                value.Detecttime = reader.GetDateTime(1).AddHours(9).ToString("yyyy/MM/dd hh:mm:ss");
                                 value.Datatype = reader.GetString(2);
                                 //value.Imageurl = reader.GetString(3);
                                 result.Add(value);
@@ -71,7 +72,7 @@ namespace testgitlab.Business
                 }
             }
             catch (SqlException e)
-            {   
+            {
                 Console.WriteLine(e.StackTrace);
             }
 
