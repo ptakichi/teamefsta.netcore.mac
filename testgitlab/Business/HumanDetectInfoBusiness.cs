@@ -60,7 +60,7 @@ namespace testgitlab.Business
                             {
                                 value = new HumanDetectInfoValue();
                                 value.Detect = reader.GetString(0);
-                                value.Detecttime = reader.GetDateTime(1).AddHours(9).ToString("yyyy/MM/dd hh:mm:ss");
+                                value.Detecttime = reader.GetDateTime(1).AddHours(9).ToString("yyyy/MM/dd HH:mm:ss");
                                 value.Datatype = reader.GetString(2);
                                 //value.Imageurl = reader.GetString(3);
                                 result.Add(value);
