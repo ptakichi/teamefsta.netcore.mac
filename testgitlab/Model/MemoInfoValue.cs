@@ -6,6 +6,8 @@ namespace testgitlab.Model
         public MemoInfoValue()
         {
         }
+        //メモ内容
+        public String id { get; set; }
 
         //メモ内容
         public String Naiyou { get; set; }

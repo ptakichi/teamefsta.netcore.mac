@@ -10,7 +10,9 @@ namespace testgitlab.Business
     public class MemoInfoBusiness
     {
 
-        private static String searchSql = "select Top 20 naiyou, endflg, CONVERT(NVARCHAR, kigendate, 111), CONVERT(NVARCHAR, entrydate, 20),CONVERT(NVARCHAR, updatedate, 20)"
+        //private static String searchSql = "select Top 20 naiyou, endflg, CONVERT(NVARCHAR, kigendate, 111), CONVERT(NVARCHAR, entrydate, 20),CONVERT(NVARCHAR, updatedate, 20)"
+            //+ " from MemoData";
+        private static String searchSql = "select id, naiyou, endflg, CONVERT(NVARCHAR, kigendate, 111), CONVERT(NVARCHAR, entrydate, 20),CONVERT(NVARCHAR, updatedate, 20)"
             + " from MemoData";
         
         private static String insertSql = "insert into MemoData (naiyou, endflg, kigendate, entrydate, updatedate)"
@@ -58,9 +60,10 @@ namespace testgitlab.Business
                             while (reader.Read())
                             {
                                 value = new MemoInfoValue();
-                                value.Naiyou = reader.GetString(0); 
-                                value.Endflg = reader.GetString(1);
-                                value.Kigendate = reader.GetString(2);
+                                value.id = reader.GetString(0);
+                                value.Naiyou = reader.GetString(1); 
+                                value.Endflg = reader.GetString(2);
+                                value.Kigendate = reader.GetString(3);
                                 result.Add(value);
                                 Console.WriteLine("内容：" + value.Naiyou + " 完了フラグ：" + value.Endflg);
 
