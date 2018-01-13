@@ -60,7 +60,7 @@ namespace testgitlab.Business
                             while (reader.Read())
                             {
                                 value = new MemoInfoValue();
-                                value.id = reader.GetString(0);
+                                value.id = reader.GetInt32(0).ToString();
                                 value.Naiyou = reader.GetString(1); 
                                 value.Endflg = reader.GetString(2);
                                 value.Kigendate = reader.GetString(3);
