@@ -24,15 +24,7 @@ namespace testgitlab.Business
             try
             {
 
-                //TODO:共通化したい
-                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-                builder.DataSource = "teamefstadb.database.windows.net";
-                builder.UserID = "teamefsta";
-                builder.Password = "Yuuka0707";
-                builder.InitialCatalog = "teamefstaDB";
-
-
-                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                using (SqlConnection connection = new SqlConnection(SqlCommon.getSqlConnectionString()))
                 {
                     Console.WriteLine("\nQuery data example:");
                     Console.WriteLine("=========================================\n");

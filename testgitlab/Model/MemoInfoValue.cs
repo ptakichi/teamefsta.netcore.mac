@@ -15,6 +15,10 @@ namespace testgitlab.Model
         public String Endflg { get; set; }
         //期限日時
         public String Kigendate { get; set; }
+        //登録日時
+        public String Entrydate { get; set; }
+        //更新日時
+        public String Updatedate { get; set; }
 
     }
 }

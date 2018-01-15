@@ -24,6 +24,19 @@ namespace testgitlab.Controllers
 
             return business.getMemoInfo();
         }
+
+        // GET api/MemoInfo/All
+        [HttpGet()]
+        public List<MemoInfoValue> All()
+        {
+            //別ドメインからのアクセス対応
+            HttpContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+
+            MemoInfoBusiness business = new MemoInfoBusiness();
+
+            return business.getMemoInfoAll();
+        }
+
         // POST api/MemoInfo
         [HttpPost]
         public Boolean Post(MemoInfoValue info)
@@ -34,6 +47,7 @@ namespace testgitlab.Controllers
             MemoInfoBusiness business = new MemoInfoBusiness();
             return business.insertMemoInfo(info);
         }
+
         // GET api/MemoInfo
         [HttpPut("{id}")]
         public Boolean Put(int id, MemoInfoValue info)

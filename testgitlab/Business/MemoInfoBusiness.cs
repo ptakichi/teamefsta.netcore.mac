@@ -12,19 +12,14 @@ namespace testgitlab.Business
 
         //private static String searchSql = "select Top 20 naiyou, endflg, CONVERT(NVARCHAR, kigendate, 111), CONVERT(NVARCHAR, entrydate, 20),CONVERT(NVARCHAR, updatedate, 20)"
             //+ " from MemoData";
-        private static String searchSql = "select id, naiyou, endflg, CONVERT(NVARCHAR, kigendate, 111), CONVERT(NVARCHAR, entrydate, 20),CONVERT(NVARCHAR, updatedate, 20)"
-            + " from MemoData";
-        
-        private static String insertSql = "insert into MemoData (naiyou, endflg, kigendate, entrydate, updatedate)"
-            + " VALUES (@naiyou, @endflg, @kigendate, @entrydate, @updatedate)";
 
-        private static String updateSql = "update MemoData set"
-            + " set naiyou = @naiyou, endflg = @endflg, kigendate = @kigendate, updatedate = @updatedate"
-            + " where id = @id";
-        
         public MemoInfoBusiness()
         {
         }
+
+        //tablet.html表示用、終了フラグが0のものを取得
+        private static String searchSql = "select id, naiyou, endflg, CONVERT(NVARCHAR, kigendate, 111), CONVERT(NVARCHAR, entrydate, 111),CONVERT(NVARCHAR, updatedate, 111)"
+            + " from MemoData where endflg = '0'";
 
         public List<MemoInfoValue> getMemoInfo(){
 
@@ -33,15 +28,7 @@ namespace testgitlab.Business
             try
             {
 
-                //TODO:共通化したい
-                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-                builder.DataSource = "teamefstadb.database.windows.net";
-                builder.UserID = "teamefsta";
-                builder.Password = "Yuuka0707";
-                builder.InitialCatalog = "teamefstaDB";
-
-
-                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                using (SqlConnection connection = new SqlConnection(SqlCommon.getSqlConnectionString()))
                 {
                     connection.Open();
                     StringBuilder sb = new StringBuilder();
@@ -52,20 +39,13 @@ namespace testgitlab.Business
 
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
-                        MemoInfoValue value = null;
 
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             
                             while (reader.Read())
                             {
-                                value = new MemoInfoValue();
-                                value.id = reader.GetInt32(0).ToString();
-                                value.Naiyou = reader.GetString(1); 
-                                value.Endflg = reader.GetString(2);
-                                value.Kigendate = reader.GetString(3);
-                                result.Add(value);
-                                Console.WriteLine("内容：" + value.Naiyou + " 完了フラグ：" + value.Endflg);
+                                result.Add(createMemoInfoValue(reader));
 
                             }
                         }
@@ -80,20 +60,79 @@ namespace testgitlab.Business
             return result;
         }
 
+
+        private MemoInfoValue createMemoInfoValue(SqlDataReader reader){
+            
+            MemoInfoValue value = new MemoInfoValue();
+            value.id = reader.GetInt32(0).ToString();
+            value.Naiyou = reader.GetString(1);
+            value.Endflg = reader.GetString(2);
+            value.Kigendate = reader.GetString(3);
+            value.Entrydate = reader.GetString(4);
+            value.Updatedate = reader.GetString(5);
+            Console.WriteLine("内容：" + value.Naiyou + " 完了フラグ：" + value.Endflg);
+
+            return value;
+
+        }
+
+
+
+        private static String searchSqlAll = "select id, naiyou, endflg, CONVERT(NVARCHAR, kigendate, 111), CONVERT(NVARCHAR, entrydate, 111),CONVERT(NVARCHAR, updatedate, 111)"
+            + " from MemoData";
+        
+        //設定用全検索
+        public List<MemoInfoValue> getMemoInfoAll()
+        {
+
+            List<MemoInfoValue> result = new List<MemoInfoValue>();
+
+            try
+            {
+
+                using (SqlConnection connection = new SqlConnection(SqlCommon.getSqlConnectionString()))
+                {
+                    connection.Open();
+                    StringBuilder sb = new StringBuilder();
+
+                    sb.Append(searchSqlAll);
+
+                    String sql = sb.ToString();
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+
+                            while (reader.Read())
+                            {
+                                result.Add(createMemoInfoValue(reader));
+
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
+
+            return result;
+        }
+
+
+
+        private static String insertSql = "insert into MemoData (naiyou, endflg, kigendate, entrydate, updatedate)"
+            + " VALUES (@naiyou, @endflg, @kigendate, @entrydate, @updatedate)";
+
         public Boolean insertMemoInfo(MemoInfoValue info)
         {
             try
             {
 
-                //TODO:共通化したい
-                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-                builder.DataSource = "teamefstadb.database.windows.net";
-                builder.UserID = "teamefsta";
-                builder.Password = "Yuuka0707";
-                builder.InitialCatalog = "teamefstaDB";
-
-
-                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                using (SqlConnection connection = new SqlConnection(SqlCommon.getSqlConnectionString()))
                 {
                     connection.Open();
                     StringBuilder sb = new StringBuilder();
@@ -126,20 +165,16 @@ namespace testgitlab.Business
             return true;
         }
 
+        private static String updateSql = "update MemoData set"
+            + " naiyou = @naiyou, endflg = @endflg, kigendate = @kigendate, updatedate = GETDATE()"
+            + " where id = @id";
+
         public Boolean updateMemoInfo(int id, MemoInfoValue info)
         {
             try
             {
 
-                //TODO:共通化したい
-                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-                builder.DataSource = "teamefstadb.database.windows.net";
-                builder.UserID = "teamefsta";
-                builder.Password = "Yuuka0707";
-                builder.InitialCatalog = "teamefstaDB";
-
-
-                using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
+                using (SqlConnection connection = new SqlConnection(SqlCommon.getSqlConnectionString()))
                 {
                     connection.Open();
                     StringBuilder sb = new StringBuilder();
