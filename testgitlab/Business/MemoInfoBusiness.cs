@@ -169,7 +169,7 @@ namespace testgitlab.Business
             + " naiyou = @naiyou, endflg = @endflg, kigendate = @kigendate, updatedate = GETDATE()"
             + " where id = @id";
 
-        public Boolean updateMemoInfo(int id, MemoInfoValue info)
+        public Boolean updateMemoInfo(MemoInfoValue info)
         {
             try
             {
@@ -180,7 +180,7 @@ namespace testgitlab.Business
                     StringBuilder sb = new StringBuilder();
 
                     sb.Append(updateSql);
-                    sb.Replace("@id", id.ToString());
+                    sb.Replace("@id", info.id);
                     sb.Replace("@naiyou", info.Naiyou);
                     sb.Replace("@endflg", info.Endflg);
                     sb.Replace("@kigendate", info.Kigendate);

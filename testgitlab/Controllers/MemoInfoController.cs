@@ -48,16 +48,16 @@ namespace testgitlab.Controllers
             return business.insertMemoInfo(info);
         }
 
-        // GET api/MemoInfo
+        // PUT api/MemoInfo
         [HttpPut("{id}")]
-        public Boolean Put(int id, MemoInfoValue info)
+        public Boolean Put(MemoInfoValue info)
         {
             //別ドメインからのアクセス対応
             HttpContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 
             MemoInfoBusiness business = new MemoInfoBusiness();
 
-            return business.updateMemoInfo(id, info);
+            return business.updateMemoInfo(info);
         }
     }
 }
