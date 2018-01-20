@@ -19,7 +19,7 @@ namespace testgitlab.Business
 
         //tablet.html表示用、終了フラグが0のものを取得
         private static String searchSql = "select id, naiyou, endflg, CONVERT(NVARCHAR, kigendate, 111), CONVERT(NVARCHAR, entrydate, 111),CONVERT(NVARCHAR, updatedate, 111)"
-            + " from MemoData where endflg = '0'";
+            + " from MemoData where kigendate <= GETDATE()";
 
         public List<MemoInfoValue> getMemoInfo(){
 
@@ -76,7 +76,41 @@ namespace testgitlab.Business
 
         }
 
+        private static String deleteSql = "delete from MemoData where id = @id";
 
+        public bool deleteMemoInfo(int id)
+        {
+            try{
+                using (SqlConnection connection = new SqlConnection(SqlCommon.getSqlConnectionString()))
+                {
+                    connection.Open();
+                    int result = 0;
+
+                    using (SqlCommand command = connection.CreateCommand())
+                    {
+
+                        command.CommandText = deleteSql;
+
+                        command.Parameters.Add(new SqlParameter("@id", id));
+
+                        // SQLの実行
+                        result = command.ExecuteNonQuery();
+                        if (result == 0)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            catch (SqlException e)
+            {
+                Console.WriteLine(e.ToString());
+                return false;
+            }
+
+            return true;
+        
+        }
 
         private static String searchSqlAll = "select id, naiyou, endflg, CONVERT(NVARCHAR, kigendate, 111), CONVERT(NVARCHAR, entrydate, 111),CONVERT(NVARCHAR, updatedate, 111)"
             + " from MemoData";
@@ -125,7 +159,7 @@ namespace testgitlab.Business
 
 
         private static String insertSql = "insert into MemoData (naiyou, endflg, kigendate, entrydate, updatedate)"
-            + " VALUES (@naiyou, @endflg, @kigendate, @entrydate, @updatedate)";
+            + " VALUES (@naiyou, '0', @kigendate, GETDATE(), GETDATE())";
 
         public Boolean insertMemoInfo(MemoInfoValue info)
         {
@@ -135,18 +169,21 @@ namespace testgitlab.Business
                 using (SqlConnection connection = new SqlConnection(SqlCommon.getSqlConnectionString()))
                 {
                     connection.Open();
-                    StringBuilder sb = new StringBuilder();
-
-                    sb.Append(insertSql);
-                    sb.Replace("@naiyou", info.Naiyou);
-                    sb.Replace("@endflg", info.Endflg);
-                    sb.Replace("@kigendate", info.Kigendate);
-
-                    String sql = sb.ToString();
                     int result = 0;
-                    using (SqlCommand command = new SqlCommand(sql, connection))
+
+                    using (SqlCommand command = connection.CreateCommand())
                     {
+
                         command.CommandText = insertSql;
+
+                        command.Parameters.Add(new SqlParameter("@naiyou", info.Naiyou));
+                        //日付型
+                        var dateparam = new SqlParameter();
+                        dateparam.ParameterName = "@kigendate";
+                        dateparam.SqlDbType = System.Data.SqlDbType.DateTime2;
+                        dateparam.Value = info.Kigendate.Replace("/", "-") + " 00:00:00";
+                        command.Parameters.Add(dateparam);
+
                         // SQLの実行
                         result = command.ExecuteNonQuery();
                         if (result == 0)
@@ -158,7 +195,7 @@ namespace testgitlab.Business
             }
             catch (SqlException e)
             {
-                Console.WriteLine(e.StackTrace);
+                Console.WriteLine(e.ToString());
                 return false;
             }
 
@@ -177,19 +214,28 @@ namespace testgitlab.Business
                 using (SqlConnection connection = new SqlConnection(SqlCommon.getSqlConnectionString()))
                 {
                     connection.Open();
-                    StringBuilder sb = new StringBuilder();
-
-                    sb.Append(updateSql);
-                    sb.Replace("@id", info.id);
-                    sb.Replace("@naiyou", info.Naiyou);
-                    sb.Replace("@endflg", info.Endflg);
-                    sb.Replace("@kigendate", info.Kigendate);
-
-                    String sql = sb.ToString();
                     int result = 0;
-                    using (SqlCommand command = new SqlCommand(sql, connection))
+
+                    using (SqlCommand command = connection.CreateCommand())
                     {
-                        command.CommandText = insertSql;
+
+                        command.CommandText = updateSql;
+
+                        command.Parameters.Add(new SqlParameter("@id", info.id));
+                        command.Parameters.Add(new SqlParameter("@naiyou", info.Naiyou));
+                        command.Parameters.Add(new SqlParameter("@endflg", info.Endflg));
+                        //日付型
+                        var dateparam = new SqlParameter();
+                        dateparam.ParameterName = "@kigendate";
+                        dateparam.SqlDbType =System.Data.SqlDbType.DateTime2;
+                        dateparam.Value = info.Kigendate.Replace("/","-")+" 00:00:00";
+                        command.Parameters.Add(dateparam);
+
+                        //SqlParameter parameter = new SqlParameter();
+                        //parameter.ParameterName = "@Date";
+                        //parameter.SqlDbType = SqlDbType.Date;
+                        //parameter.Value = "2007/12/1";
+
                         // SQLの実行
                         result = command.ExecuteNonQuery();
                         if(result == 0)
@@ -201,7 +247,7 @@ namespace testgitlab.Business
             }
             catch (SqlException e)
             {
-                Console.WriteLine(e.StackTrace);
+                Console.WriteLine(e.ToString());
                 return false;
             }
 

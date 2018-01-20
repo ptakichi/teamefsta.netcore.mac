@@ -37,8 +37,8 @@ namespace testgitlab.Controllers
             return business.getMemoInfoAll();
         }
 
-        // POST api/MemoInfo
-        [HttpPost]
+        // POST api/MemoInfo/Insert
+        [HttpPost("Insert")]
         public Boolean Post(MemoInfoValue info)
         {
             //別ドメインからのアクセス対応
@@ -48,8 +48,8 @@ namespace testgitlab.Controllers
             return business.insertMemoInfo(info);
         }
 
-        // PUT api/MemoInfo
-        [HttpPut("{id}")]
+        // POST api/MemoInfo/Update
+        [HttpPost("Update")]
         public Boolean Put(MemoInfoValue info)
         {
             //別ドメインからのアクセス対応
@@ -59,5 +59,19 @@ namespace testgitlab.Controllers
 
             return business.updateMemoInfo(info);
         }
+
+        // POST api/MemoInfo/Delete/100
+        [HttpPost("Delete")]
+        public Boolean Delete(int id)
+        {
+            //別ドメインからのアクセス対応
+            HttpContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+
+            MemoInfoBusiness business = new MemoInfoBusiness();
+
+            return business.deleteMemoInfo(id);
+        }
+    
+    
     }
 }
