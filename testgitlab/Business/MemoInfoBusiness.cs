@@ -19,7 +19,7 @@ namespace testgitlab.Business
 
         //tablet.html表示用、終了フラグが0のものを取得
         private static String searchSql = "select id, naiyou, endflg, CONVERT(NVARCHAR, kigendate, 111), CONVERT(NVARCHAR, entrydate, 111),CONVERT(NVARCHAR, updatedate, 111)"
-            + " from MemoData where kigendate <= GETDATE()";
+            + " from MemoData where kigendate >= GETDATE()";
 
         public List<MemoInfoValue> getMemoInfo(){
 
